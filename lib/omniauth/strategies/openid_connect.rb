@@ -201,7 +201,7 @@ module OmniAuth
       end
 
       def user_info
-        return @user_info if @user_info
+        return @user_info if defined?(@user_info)
 
         if access_token.id_token
           decoded = decode_id_token(access_token.id_token).raw_attributes
@@ -213,7 +213,7 @@ module OmniAuth
       end
 
       def access_token
-        return @access_token if @access_token
+        return @access_token if defined?(@access_token)
 
         @access_token = client.access_token!(
           scope: (options.scope if options.send_scope_to_token_endpoint),
@@ -254,6 +254,10 @@ module OmniAuth
 
       def stored_nonce
         session.delete('omniauth.nonce')
+      end
+
+      def script_name
+        @env ? super : ''
       end
 
       def session
@@ -349,6 +353,8 @@ module OmniAuth
         attr_accessor :error, :error_reason, :error_uri
 
         def initialize(data)
+          super
+
           self.error = data[:error]
           self.error_reason = data[:reason]
           self.error_uri = data[:uri]
